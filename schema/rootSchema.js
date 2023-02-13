@@ -1,19 +1,39 @@
-import { GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
+import {
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLString,
+} from "graphql";
+import Mongo from "../models/Mongo.js";
+import { mongoType } from "./schemaType.js";
 
-const basicType = new GraphQLObjectType({
-  name: "basic",
+const RootQuery = new GraphQLObjectType({
+  name: "mongo",
   fields: () => ({
-    name: { type: GraphQLString },
+    allData: {
+      type: new GraphQLList(mongoType),
+      resolve: () => {
+        return Mongo.find();
+      },
+    },
   }),
 });
 
-const RootQuery = new GraphQLObjectType({
-  name: "hello",
+const RootMutation = new GraphQLObjectType({
+  name: "mutation",
   fields: () => ({
-    hello: {
-      type: basicType,
-      resolve: () => {
-        return { name: "hello world" };
+    create: {
+      type: mongoType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        description: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: (parent, args) => {
+        const mongo = new Mongo(args);
+        return mongo.save();
       },
     },
   }),
@@ -21,4 +41,5 @@ const RootQuery = new GraphQLObjectType({
 
 export default new GraphQLSchema({
   query: RootQuery,
+  mutation: RootMutation,
 });
