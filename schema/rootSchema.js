@@ -15,6 +15,7 @@ const RootQuery = new GraphQLObjectType({
     allData: {
       type: new GraphQLList(mongoType),
       resolve: () => {
+        Mongo.staticExample();
         return Mongo.find();
       },
     },

@@ -13,6 +13,13 @@ const mongoSchema = new mongoose.Schema({
   },
 });
 
+mongoSchema.methods.valueConsole = function (cb) {
+  console.log("this method is calling during mutation only");
+};
+mongoSchema.statics.staticExample = function () {
+  console.log("this static function can be called from everywhere");
+};
+
 const Mongo = new mongoose.model("Mongo", mongoSchema);
 
 export default Mongo;
